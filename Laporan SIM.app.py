@@ -1,7 +1,272 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
+
+# =====================================
+# CONFIG
+# =====================================
+st.set_page_config(
+    page_title="Dashboard Sistem Absensi",
+    page_icon="📊",
+    layout="wide"
+)
+
+# =====================================
+# CSS
+# =====================================
+st.markdown("""
+<style>
+
+[data-testid="stAppViewContainer"]{
+background: linear-gradient(
+135deg,
+#0f172a,
+#1e293b,
+#0f172a
+);
+}
+
+.hero{
+padding:40px;
+border-radius:20px;
+background:linear-gradient(
+135deg,
+#0891b2,
+#2563eb
+);
+text-align:center;
+color:white;
+margin-bottom:25px;
+}
+
+.kpi{
+background:rgba(255,255,255,.05);
+padding:20px;
+border-radius:20px;
+text-align:center;
+border:1px solid rgba(255,255,255,.1);
+}
+
+.kpi-number{
+font-size:38px;
+font-weight:bold;
+color:#22d3ee;
+}
+
+.kpi-title{
+font-size:14px;
+color:white;
+}
+
+.footer{
+text-align:center;
+margin-top:40px;
+color:white;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+# =====================================
+# SIDEBAR
+# =====================================
+with st.sidebar:
+    st.title("📊 Dashboard")
+    st.markdown("---")
+    st.write("👨‍🎓 Responden : 42")
+    st.write("📋 Variabel : 5")
+    st.write("🏫 Fakultas : 3")
+
+# =====================================
+# HERO
+# =====================================
+st.markdown("""
+<div class='hero'>
+<h1>📊 Dashboard Analisis Sistem Absensi</h1>
+<h3>Universitas Maarif Hasyim Latif</h3>
+<p>Visualisasi Hasil Kuisioner Mahasiswa</p>
+</div>
+""", unsafe_allow_html=True)
+
+# =====================================
+# KPI
+# =====================================
+c1,c2,c3,c4 = st.columns(4)
+
+with c1:
+    st.markdown("""
+    <div class='kpi'>
+    <div class='kpi-number'>42</div>
+    <div class='kpi-title'>RESPONDEN</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with c2:
+    st.markdown("""
+    <div class='kpi'>
+    <div class='kpi-number'>5</div>
+    <div class='kpi-title'>VARIABEL</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with c3:
+    st.markdown("""
+    <div class='kpi'>
+    <div class='kpi-number'>3</div>
+    <div class='kpi-title'>FAKULTAS</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with c4:
+    st.markdown("""
+    <div class='kpi'>
+    <div class='kpi-number'>3.46</div>
+    <div class='kpi-title'>RATA-RATA</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+st.markdown("---")
+
+# =====================================
+# DATA VARIABEL
+# =====================================
+st.header("🧩 Variabel yang Diukur")
+
+variabel = pd.DataFrame({
+    "Kode":["E","F","G","H","I"],
+    "Variabel":[
+        "Kemudahan Pemahaman",
+        "Kecepatan Proses",
+        "Kendala Sistem",
+        "Kemudahan Pencatatan",
+        "Akurasi Data"
+    ]
+})
+
+st.dataframe(
+    variabel,
+    use_container_width=True,
+    hide_index=True
+)
+
+# =====================================
+# PROFIL RESPONDEN
+# =====================================
+st.header("👨‍🎓 Profil Responden")
+
+gender = pd.DataFrame({
+    "Kategori":["Laki-laki","Perempuan"],
+    "Jumlah":[25,17]
+})
+
+usia = pd.DataFrame({
+    "Kategori":["18-25","26-35"],
+    "Jumlah":[29,13]
+})
+
+fakultas = pd.DataFrame({
+    "Kategori":["Teknik","Ekonomi","FIKES"],
+    "Jumlah":[15,15,12]
+})
+
+c1,c2,c3 = st.columns(3)
+
+with c1:
+    st.subheader("Jenis Kelamin")
+    st.bar_chart(gender.set_index("Kategori"))
+
+with c2:
+    st.subheader("Kelompok Usia")
+    st.bar_chart(usia.set_index("Kategori"))
+
+with c3:
+    st.subheader("Asal Fakultas")
+    st.bar_chart(fakultas.set_index("Kategori"))
+
+# =====================================
+# NILAI VARIABEL
+# =====================================
+st.header("📈 Nilai Rata-rata Variabel")
+
+nilai = {
+    "Kemudahan Pemahaman":3.05,
+    "Kecepatan Proses":3.48,
+    "Kendala Sistem":3.52,
+    "Kemudahan Pencatatan":3.50,
+    "Akurasi Data":3.76
+}
+
+for nama, skor in nilai.items():
+    st.write(f"**{nama} ({skor})**")
+    st.progress(skor/5)
+
+# =====================================
+# RANKING
+# =====================================
+st.header("🏆 Ranking Variabel")
+
+ranking = pd.DataFrame({
+    "Variabel":[
+        "Akurasi Data",
+        "Kendala Sistem",
+        "Kemudahan Pencatatan",
+        "Kecepatan Proses",
+        "Kemudahan Pemahaman"
+    ],
+    "Nilai":[
+        3.76,
+        3.52,
+        3.50,
+        3.48,
+        3.05
+    ]
+})
+
+st.dataframe(
+    ranking,
+    use_container_width=True,
+    hide_index=True
+)
+
+# =====================================
+# INSIGHT
+# =====================================
+st.success("""
+🏆 Variabel Terbaik
+
+Akurasi Data : 3.76
+""")
+
+st.warning("""
+⚠️ Perlu Ditingkatkan
+
+Kemudahan Pemahaman : 3.05
+""")
+
+# =====================================
+# KESIMPULAN
+# =====================================
+st.header("📝 Kesimpulan")
+
+st.info("""
+Sistem absensi mahasiswa secara umum dinilai baik.
+
+Keunggulan utama terdapat pada aspek Akurasi Data.
+
+Aspek yang perlu ditingkatkan adalah Kemudahan Pemahaman
+melalui sosialisasi dan panduan penggunaan sistem.
+""")
+
+# =====================================
+# FOOTER
+# =====================================
+st.markdown("""
+<div class='footer'>
+<hr>
+Laporan Kuisioner Sistem Absensi Mahasiswa<br><br>
+Ega Irza'ul Fanani (142223067)<br>
+Teknik Industri - UMAHA
+</div>
+""", unsafe_allow_html=True)tly.graph_objects as go
 
 # =====================================
 # PAGE CONFIG
