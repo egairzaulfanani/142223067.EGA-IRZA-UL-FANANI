@@ -1,6 +1,12 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
+
+# Cek Plotly
+try:
+    import plotly.express as px
+    PLOTLY_AVAILABLE = True
+except ModuleNotFoundError:
+    PLOTLY_AVAILABLE = False
 
 # ======================
 # CONFIG
@@ -12,73 +18,24 @@ st.set_page_config(
 )
 
 # ======================
-# CUSTOM CSS
-# ======================
-st.markdown("""
-<style>
-.main {
-    background-color: #0d1b2a;
-}
-
-.metric-card {
-    background: #132032;
-    padding: 20px;
-    border-radius: 15px;
-    text-align: center;
-    border: 1px solid rgba(255,255,255,0.1);
-}
-
-.big-number {
-    font-size: 40px;
-    font-weight: bold;
-    color: #5ecfcc;
-}
-
-.section-title {
-    font-size: 32px;
-    font-weight: bold;
-    margin-top: 30px;
-    margin-bottom: 20px;
-}
-
-.highlight {
-    padding: 25px;
-    border-radius: 15px;
-    background: #132032;
-    border-left: 5px solid #0ea5a0;
-}
-</style>
-""", unsafe_allow_html=True)
-
-# ======================
 # HEADER
 # ======================
-st.markdown("""
-<div style='text-align:center;padding:20px'>
-<h1>📊 Laporan Kuisioner Sistem Absensi Mahasiswa</h1>
-<p>
+st.title("📊 Laporan Kuisioner Sistem Absensi Mahasiswa")
+
+st.write("""
 Survei persepsi mahasiswa terhadap kemudahan, kecepatan,
-akurasi, dan efektivitas sistem absensi kampus
-</p>
-</div>
-""", unsafe_allow_html=True)
+akurasi, dan efektivitas sistem absensi kampus.
+""")
 
 # ======================
-# METRIC
+# METRICS
 # ======================
-col1, col2, col3, col4 = st.columns(4)
+c1, c2, c3, c4 = st.columns(4)
 
-with col1:
-    st.metric("Responden", "42")
-
-with col2:
-    st.metric("Variabel", "5")
-
-with col3:
-    st.metric("Fakultas", "3")
-
-with col4:
-    st.metric("Rata-rata Skor", "3.46")
+c1.metric("Responden", "42")
+c2.metric("Variabel", "5")
+c3.metric("Fakultas", "3")
+c4.metric("Rata-rata Skor", "3.46")
 
 st.divider()
 
@@ -105,69 +62,67 @@ variabel = pd.DataFrame({
     ]
 })
 
-st.dataframe(
-    variabel,
-    use_container_width=True,
-    hide_index=True
-)
+st.dataframe(variabel, use_container_width=True)
 
 # ======================
 # DEMOGRAFI
 # ======================
 st.header("👨‍🎓 Profil Responden")
 
-col1, col2, col3 = st.columns(3)
+if PLOTLY_AVAILABLE:
 
-with col1:
+    col1, col2, col3 = st.columns(3)
 
-    gender = pd.DataFrame({
-        "Kategori": ["Laki-laki", "Perempuan"],
-        "Jumlah": [25, 17]
-    })
+    with col1:
+        gender = pd.DataFrame({
+            "Kategori": ["Laki-laki", "Perempuan"],
+            "Jumlah": [25, 17]
+        })
 
-    fig = px.pie(
-        gender,
-        names="Kategori",
-        values="Jumlah",
-        hole=0.55,
-        title="Jenis Kelamin"
-    )
+        fig = px.pie(
+            gender,
+            names="Kategori",
+            values="Jumlah",
+            hole=0.5,
+            title="Jenis Kelamin"
+        )
 
-    st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, use_container_width=True)
 
-with col2:
+    with col2:
+        usia = pd.DataFrame({
+            "Kategori": ["18–25 Tahun", "26–35 Tahun"],
+            "Jumlah": [29, 13]
+        })
 
-    usia = pd.DataFrame({
-        "Kategori": ["18-25 Tahun", "26-35 Tahun"],
-        "Jumlah": [29, 13]
-    })
+        fig = px.pie(
+            usia,
+            names="Kategori",
+            values="Jumlah",
+            hole=0.5,
+            title="Kelompok Usia"
+        )
 
-    fig = px.pie(
-        usia,
-        names="Kategori",
-        values="Jumlah",
-        hole=0.55,
-        title="Kelompok Usia"
-    )
+        st.plotly_chart(fig, use_container_width=True)
 
-    st.plotly_chart(fig, use_container_width=True)
+    with col3:
+        fakultas = pd.DataFrame({
+            "Fakultas": ["Teknik", "Ekonomi", "FIKES"],
+            "Jumlah": [15, 15, 12]
+        })
 
-with col3:
+        fig = px.pie(
+            fakultas,
+            names="Fakultas",
+            values="Jumlah",
+            hole=0.5,
+            title="Asal Fakultas"
+        )
 
-    fakultas = pd.DataFrame({
-        "Fakultas": ["Teknik", "Ekonomi", "FIKES"],
-        "Jumlah": [15, 15, 12]
-    })
+        st.plotly_chart(fig, use_container_width=True)
 
-    fig = px.pie(
-        fakultas,
-        names="Fakultas",
-        values="Jumlah",
-        hole=0.55,
-        title="Asal Fakultas"
-    )
-
-    st.plotly_chart(fig, use_container_width=True)
+else:
+    st.warning("Plotly belum terinstall.")
 
 # ======================
 # LIKERT
@@ -189,11 +144,7 @@ likert = pd.DataFrame({
     "SS": [3, 5, 3, 5, 12]
 })
 
-st.dataframe(
-    likert,
-    use_container_width=True,
-    hide_index=True
-)
+st.dataframe(likert, use_container_width=True)
 
 # ======================
 # RATA-RATA
@@ -211,21 +162,22 @@ avg_df = pd.DataFrame({
     "Nilai": [3.05, 3.48, 3.52, 3.50, 3.76]
 })
 
-fig = px.bar(
-    avg_df,
-    x="Nilai",
-    y="Variabel",
-    orientation="h",
-    text="Nilai",
-    title="Rata-rata Skor Likert"
-)
+if PLOTLY_AVAILABLE:
+    fig = px.bar(
+        avg_df,
+        x="Nilai",
+        y="Variabel",
+        orientation="h",
+        text="Nilai",
+        title="Rata-rata Skor Likert"
+    )
 
-fig.update_layout(height=500)
-
-st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True)
+else:
+    st.dataframe(avg_df, use_container_width=True)
 
 # ======================
-# HIGHLIGHT
+# TEMUAN
 # ======================
 st.header("⭐ Temuan Utama")
 
@@ -233,24 +185,20 @@ c1, c2 = st.columns(2)
 
 with c1:
     st.success("""
-### Skor Tertinggi
+**Skor Tertinggi**
 
-**Akurasi Data**
+Akurasi Data = 3,76
 
-Nilai rata-rata: **3,76**
-
-Mahasiswa sangat mempercayai keakuratan data kehadiran yang ditampilkan sistem.
+Mahasiswa sangat mempercayai keakuratan data kehadiran.
 """)
 
 with c2:
     st.warning("""
-### Skor Terendah
+**Skor Terendah**
 
-**Kemudahan Pemahaman**
+Kemudahan Pemahaman = 3,05
 
-Nilai rata-rata: **3,05**
-
-Perlu peningkatan panduan penggunaan dan sosialisasi sistem.
+Perlu peningkatan panduan penggunaan sistem.
 """)
 
 # ======================
@@ -258,33 +206,19 @@ Perlu peningkatan panduan penggunaan dan sosialisasi sistem.
 # ======================
 st.header("📝 Kesimpulan")
 
-st.markdown("""
-<div class='highlight'>
+st.info("""
+Berdasarkan hasil pengolahan data terhadap 42 responden,
+sistem absensi kampus secara keseluruhan dinilai cukup baik.
 
-Berdasarkan hasil pengolahan data kuesioner terhadap **42 responden**,
-sistem absensi kampus secara keseluruhan dinilai **cukup baik**.
+Keunggulan utama terdapat pada aspek Akurasi Data (3,76).
 
-### Keunggulan
-✅ Akurasi Data = **3,76**
-
-✅ Kendala Sistem = **3,52**
-
-✅ Kemudahan Pencatatan = **3,50**
-
-### Perlu Perbaikan
-⚠️ Kemudahan Pemahaman = **3,05**
-
-Disarankan menyediakan panduan penggunaan,
-pelatihan singkat, dan sosialisasi sistem kepada mahasiswa.
-
-</div>
-""", unsafe_allow_html=True)
+Aspek yang perlu ditingkatkan adalah Kemudahan Pemahaman (3,05)
+melalui sosialisasi dan panduan penggunaan sistem.
+""")
 
 st.divider()
 
 st.caption("""
-Laporan Hasil Kuisioner Sistem Absensi Mahasiswa
-
 Disusun oleh:
 Ega Irza'ul Fanani (142223067)
 
